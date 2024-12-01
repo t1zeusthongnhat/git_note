@@ -1,0 +1,6 @@
+Security giữa các microservice (p2)
+
+Trong quá trình đăng kí:
+Khi register thì sẽ không cần token - cấu hình sao cho khi register thì No Auth !!!
+
+

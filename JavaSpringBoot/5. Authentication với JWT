@@ -1,0 +1,25 @@
+
+Authentication với JWT:
+1. Thêm dependancy của oauth2 vào pom.xml:
+2. Tạo ra một class configuration chứa bean:
+3. Tạo một SecurityFilterTrain để authorize dựa vào authorizeRequest 
+4. Viết hàm trả về một chuỗi bộ lọc security, sau đó sd công nghệ oauth2 để xác thực ng dùng
+5. Viết hàm JWTDecoder để giải mã jwt với Secretkey trả về 1 Nimbus... 
+
+
+Matcher: 
+Ant Matchers: khớp các URL. 
+VD: .antMatchers("/admin/**").hasRole("ADMIN")
+    .antMatchers("/public/**").permitAll();
+	
+Regex Matchers: Sử dụng biểu thức chính quy để khớp các URL.
+VD:  http.authorizeRequests()
+    .regexMatchers("/path/.*\\.html").permitAll();
+Cho phép linh hoạt hơn khi khớp các URL phức tạp.
+
+MVC Matchers: Tích hợp với Spring MVC và hiểu các tiền tố đường dẫn (prefix) của ứng dụng.
+VD:  http.authorizeRequests()
+    .mvcMatchers("/api/**").authenticated();
+
+
+

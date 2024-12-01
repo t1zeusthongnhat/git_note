@@ -1,0 +1,6 @@
+
+Concurrent: Chuyện gì sẽ xra khi nhiều user request cùng 1 lúc 
+
+Khi add vào cùng lúc thì việc check trong repo là vô nghĩa 
+
+  @Column(name = "name", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")

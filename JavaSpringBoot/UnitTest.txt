@@ -1,0 +1,21 @@
+
+
+Để thực hiện viết test:
+Cần phải đánh dấu annotation @SpringBootTest
+
+- @AutoConfigurationMockMvc
+- Khai báo đổi tg mockMvc: đối tượng này được sử dụng để kiểm thử controller, giả lập yêu cầu + ktra phản hồi 
+- @MockBean: tạo ra đối tượng giả của các bean trong ứng dụng
+- @BeforeEach: tạo data ban đầu 
+- Cuối cùng là hàm test:
+Nhận những cái sau:
+
+//GIVEN
+
+
+
+//When
+
+
+//Then 
+

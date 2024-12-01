@@ -1,0 +1,39 @@
+
+Khi sd thường xuyên thì cthe đăng nhập nhanh: token ltuc được refresh
+Khi truy cập thì sẽ refresh token với thời hạn lớn hơn thời hạn hiệu lực 
+Tự handle Refresh token:
+Viết hàm refreshToken: lấy ra thông tin token từ Object, lấy đối tg qua biến, thông tin về signedJWT, sau đó lưu vào csdl để vô hiệu hóa token
+-> gen 1 token mới 
+
+Với Oauth2:
+ý tưởng: để xli việc thg xuyên truy cập sẽ vào thẳng đc ứng dụng hay đc refresh lại token mới với thời hạn lớn hơn thời hạn hiệu lực
+xli lại hàm generated để set tgian hiệu lực trong file properties, xét lại hàm verifierToken để tái sử dụng :
+  Date expirationTime = (isRefresh) //neu ma la refresh thi
+                ? new Date(signedJWT.getJWTClaimsSet().getIssueTime()
+                .toInstant().plus(REFRESHABLE,ChronoUnit.SECONDS).toEpochMilli())
+                //con k thi
+                : signedJWT.getJWTClaimsSet().getExpirationTime();
+
+sau đó khi logout thì refresh sẽ cho true:
+ public void logOutToken(LogoutRequest request) throws ParseException, JOSEException {
+        try{
+            //dau tien khi logout can doc thong tin cua token de lay ra token id - expiration time cua no
+            var token = request.getToken();
+            //verify token xem no co hop le hay khong da
+            //truyen vao true vi
+            var signToken = verifyToken(token,true);
+            //lay ra id cua token
+            String jti = signToken.getJWTClaimsSet().getJWTID();
+            Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
+            InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                    .id(jti)
+                    .expiryTime(expiryTime)
+                    .build();
+            invalidateTokenRepository.save(invalidatedToken);
+
+        }
+        catch(RuntimeException ex){
+            log.info("Token already expired!");
+        }
+
+    }

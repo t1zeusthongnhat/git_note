@@ -1,0 +1,78 @@
+19/08/2024
+Handle exception + Validate 
+Simple: 
+VD: 
+@ControllerAdvice
+public class GlobalExceptionHandle {
+    //gai quyet exception lquan den Runtime
+    @ExceptionHandler
+    ResponseEntity<String> handlingRuntimeEx(RuntimeException excep){
+        return ResponseEntity.badRequest().body(excep.getMessage());
+    }
+
+    //giai quyet exception lien quan den validate
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    ResponseEntity<String> handlingValidate(MethodArgumentNotValidException exception){
+    return ResponseEntity.badRequest().body(exception.getFieldError().getDefaultMessage());
+    }
+}
+
+Hoặc tự custom:
+@Getter
+@AllArgsConstructor
+public class AppException extends RuntimeException {
+    private int code;
+    private String message;
+}
+public class UserService {
+    ...
+    public User getUser(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null)
+            throw new AppException(404, "User not found");
+        ...
+    }
+}
+thôi cứ dùng cái giản đơn đi cho nó đơn giản 
+
+Advance:Quỷ 
+Normalize API: 
+@ControllerAdvice
+public class GlobalExceptionHandle {
+    //gai quyet exception lquan den Runtime
+    @ExceptionHandler(value = RuntimeException.class)
+    ResponseEntity<ApiResponse> handlingRuntimeEx(RuntimeException excep){
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setMessage(excep.getMessage());
+        apiResponse.setCode(400);
+        return ResponseEntity.badRequest().body(apiResponse);
+    }
+ @ExceptionHandler(value = AppException.class)
+    ResponseEntity<ApiResponse> handlingRuntimeEx(AppException excep){
+        ErrorCode errorCode = excep.getErrorCode();
+        ApiResponse apiResponse = new ApiResponse();
+
+        apiResponse.setCode(errorCode.getCode());
+        apiResponse.setMessage(errorCode.getMessage());
+
+        return ResponseEntity.badRequest().body(apiResponse);
+    }
+
+    //giai quyet exception lien quan den validate
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    ResponseEntity<ApiResponse> handlingValidate(MethodArgumentNotValidException exception){
+        String enumKey =exception.getFieldError().getDefaultMessage();
+        ErrorCode errorCode = ErrorCode.valueOf(enumKey);
+
+        ApiResponse apiResponse = new ApiResponse();
+
+        apiResponse.setCode(errorCode.getCode());
+        apiResponse.setMessage(errorCode.getMessage());
+
+        return ResponseEntity.badRequest().body(apiResponse);
+    }
+
+
+
+
+}

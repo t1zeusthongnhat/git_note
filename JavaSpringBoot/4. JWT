@@ -1,0 +1,60 @@
+JWT - Json Web Token: 
+
+Mỗi lẩn login User phải nhập đủ username and password, rất bất tiện
+=> Ý tưởng token: Mỗi lần login username + password -> server, server tạo ra JWT trả về cho User
+=> lần request tiếp theo client chỉ cần gửi request kèm theo token -> server xác thực token và trả về nếu hợp lệ 
+
+
+JWT: 
+1. HEADER
+2. PAYLOAD
+3. SIGNATURE 
+
+Các bước tạo, kí và xác thực token, thực hiện trong hàm genrerateToken();
+
+Để tạo token cần header(có nd thuật toán mình sd):
+JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
+
+-> Cần body cho token: subject, issuer, issueTime, expirationTime, claim( tu build), id.
+ JWTClaimsSet jwtClaimsSet= new JWTClaimsSet.Builder()
+                //dai dien cho user dang nhap
+                .subject(username)
+                //xac dinh hinh thuc token duoc issue tu ai
+                .issuer("duonghoang")
+                .issueTime(new Date())
+                //xac dinh thoi han cho no,token co thoi han
+                .expirationTime(new Date(
+                        Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
+                ))
+                .claim("customClaim","Custom")
+                .build();
+				
+-> Tao payload cho token:   Payload payload = new Payload(jwtClaimsSet.toJSONObject());
+-> Tao obj chua token:   JWSObject jwsObject = new JWSObject(jwsHeader,payload);
+Kí và trả về một chuỗi Spring:
+ try {
+            jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
+            return jwsObject.serialize();
+        } catch (JOSEException e) {
+            throw new RuntimeException(e);
+        }
+		
+
+Verify token: 
+ public IntrospectResponse introspectResponse(IntrospectRequest introspectRequest) throws JOSEException, ParseException {
+        var token = introspectRequest.getToken();
+        // Tạo đối tượng verifier với SIGNER_KEY
+        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+        // Phân tích cú pháp token đã ký
+        SignedJWT signedJWT = SignedJWT.parse(token);
+        // Xác minh token với khóa bí mật
+        boolean verified = signedJWT.verify(verifier);
+        // Kiểm tra xem token đã hết hạn hay chưa
+        Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        boolean isExpired = new Date().after(expirationTime);
+        // Tạo phản hồi dựa trên trạng thái của token
+        boolean active = verified && !isExpired;
+        // Trả về kết quả kiểm tra token
+        return new IntrospectResponse(active);
+    }
+	

@@ -1,0 +1,6 @@
+CƠ BẢN: 
+Tự tạo một annatation cho việc Validate:
+Tạo một annotation ( thực hiện việc khai báo ) -> cần một class validator để thực hiện xử lí (chi tiết trong testDTO) 
+
+NÂNG CAO: TRÍCH XUẤT THÔNG TIN TỪ ANNOTATION 
+=> Exception handle và Validation custom chỉ dừng lại ở mức cơ bản, cần tìm hiểu sâu hơn, nâng cao hơn áp sát với một dự án thực tế 

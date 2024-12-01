@@ -1,0 +1,26 @@
+
+
+#3 Giao tiếp giữa các service, làm quen với openfeign 
+OpenFeign: 1 phần của spring cloud
+
+Dùng openfeign để thực hiện giao tiếp giữa các service: Từ service này, cthe thực hiện http request tới service kia!
+
+VD: Tạo user bên identity_service thì sẽ call đc tạo profile bên profile_service 
+Tạo interfce ProfileClient: 
+
+@FeignClient(name = "profile-service", url = "http://localhost:8081/profile")
+public interface ProfileClient {
+    @PostMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
+    ProfileCreationRequest createProfile(@RequestBody ProfileCreationRequest profile);
+}
+
+Tạo mapper để map dl từ thằng này sang thằng kia
+Thực hiện tiếp trong service:
+   //tao request, map du lieu tu userDTO sang ProfileCreationRequest
+    var profileRequest =  profileMapper.toProfileCreationRequest(userDTO);
+    var profileResponse =  profileClient.createProfile(profileRequest);
+    log.info("Service: createUser profileResponse {}", profileResponse.toString());
+	
+=> Nhớ đánh giấu @EnableFeignClient trong appication 
+Dung Mapper vua nhanh vua tien 
+xem lai, code lai

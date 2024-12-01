@@ -1,0 +1,5 @@
+Authorize với JWT thì nếu kp admin thì méo làm gì được. Sẽ bị lỗi 403 các thứ 
+Thử phân quyền trên method:
+
+PreAuthorize: kiểm tra đk trước khi gọi method
+PostAuthorize: Gọi method rồi mới kiểm tra điều kiện, đáp ứng mới cho trả về 

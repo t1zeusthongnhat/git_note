@@ -1,0 +1,13 @@
+
+
+Docker: 
+- Là công cụ giúp cài đặt tool cho việc phát triển phần mềm nhanh chóng, dễ dàng !
+- Là nền tảng cho phép develop, deploy và run application với container
+- Nó cho phép tạo các môi trường độc lập và tách biệt để khởi chạy và phát triển ứng dụng 
+và môi trường này được gọi là container. Khi cần deploy lên bất kỳ server nào chỉ cần run container của Docker thì application của bạn sẽ được khởi chạy ngay lập tức.
+
+Docker Image:  là một mẫu chỉ đọc chứa tất cả các thành phần cần thiết để chạy một ứng dụng, bao gồm mã nguồn, runtime, thư viện, và các công cụ hệ thống.
+- Docker image được xây dựng từ một file cấu hình gọi là Dockerfile. Dockerfile chứa các lệnh để xây dựng image, 
+chẳng hạn như cài đặt các gói phần mềm và sao chép mã nguồn vào image.
+
+Docker Container: là môi trường độc lập, tách biệt để chạy và phát triển ứng dụng.

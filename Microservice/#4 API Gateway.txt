@@ -1,0 +1,38 @@
+
+Quan trọng:
+
+Là trung gian giữa Client và Service Quản lí các API của các service. 
+
+
+Sping cloud gateway:
+Có 3 thành phần chính 
+1. Gateway handler mapping: map request đã khai báo, nếu match được cái request khai báo sẽ chuyển đến
+2. Gateway web handler: thực hiện request tương ứng với mapping đó 
+3. Proxied Service: điểm đến cuối cùng, là cái service của chúng ta 
+
+Khi có gateway rồi thì các yêu cầu đến các service sẽ chỉ thông qua port của gateway:
+Identity service: 8080. Profile service 8081, ... đều thông qua gateway 
+
+Config file .yml:
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: identity_service
+          uri: http://localhost:8080
+          predicates:
+            - Path=${app.app-prefix}/identity/**
+          filters:
+            - StripPrefix=2
+        - id: profile_service
+          uri: http://localhost:8081
+          predicates:
+            - Path=${app.app-prefix}/profile/**
+          filters:
+            - StripPrefix=2
+			
+			xem lai, code lai
+			

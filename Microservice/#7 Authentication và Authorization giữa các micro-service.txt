@@ -1,0 +1,51 @@
+#7 Authentication và Authorization giữa các micro-service
+
+Khi request từ registration ở identity map với create profile cho user thì bên profile sẽ cần token có role là ADMIN mới cho thực hiện :
+
+Truyền header vào khi muốn request đến profile service:
+ ServletRequestAttributes servletRequestAttributes =
+                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        var authHeader = servletRequestAttributes.getRequest().getHeader("Authorization");
+        log.info("Header: " + authHeader);
+
+        profileClient.createProfileUser(authHeader, profileUser);
+		
+		
+FeignClient:
+@FeignClient(name = "profile-service", url = "${app.service.profile}")
+public interface ProfileClient {
+    @PostMapping(value = "/internal/users", produces = MediaType.APPLICATION_JSON_VALUE)
+    ProfileCreationRequest createProfileUser(
+            @RequestHeader("Authorization") String token,
+            @RequestBody ProfileCreationRequest profileCreationRequest);
+}
+		
+		
+=> Để tránh mỗi lần request lại phải đưa token vào header thì sẽ tạo cái AuthenticationRequestInterceptor:
+
+@Slf4j
+@Component
+public class AuthenticationRequestInterceptor implements RequestInterceptor {
+    @Override
+    public void apply(RequestTemplate requestTemplate) {
+        //modify requeest truoc khi gui di
+        ServletRequestAttributes servletRequestAttributes =
+                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        var authHeader = servletRequestAttributes.getRequest().getHeader("Authorization");
+        log.info("Header: " + authHeader);
+
+        if(StringUtils.hasText(authHeader)) {
+            requestTemplate.header("Authorization", authHeader);
+        }
+    }
+}
+
+=> Để đảm bảo giải quyết chính xác yêu cầu, đến các client xác định, bỏ component mà thêm configuration vào FeignClient muốn map:
+@FeignClient(name = "profile-service", url = "${app.service.profile}", configuration = {AuthenticationRequestInterceptor.class})
+public interface ProfileClient {
+    @PostMapping(value = "/internal/users", produces = MediaType.APPLICATION_JSON_VALUE)
+    ProfileCreationRequest createProfileUser(
+            @RequestBody ProfileCreationRequest profileCreationRequest);
+}
+
+

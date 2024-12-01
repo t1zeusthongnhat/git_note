@@ -1,0 +1,82 @@
+
+
+#5 cấu hình Authentication cho Api Gateway với JWT
+
+Api gateway chịu trách nhiệm cho việc authentication, các service tự quyết định việc authorization 
+
+=> Tạo IdentityClient:
+public interface IdentityClient {
+    @PostExchange(url = "/auth/introspect", contentType = MediaType.APPLICATION_JSON_VALUE)
+    Mono<ApiResponse<IntrospectResponse>> introspect(@RequestBody IntrospectRequest request);
+}
+Không đùng feign client mà dùng reactor core mono:
+
+=> Đăng kí webclient:
+@Configuration
+public class WebClientConfiguration {
+    @Bean
+    WebClient webClient() {
+        return WebClient.builder()
+                .baseUrl("http://localhost:8080/identity")
+                .build();
+    }
+
+    @Bean
+    IdentityClient identityClient(WebClient webClient) {
+        HttpServiceProxyFactory httpServiceProxyFactory = HttpServiceProxyFactory
+                .builderFor(WebClientAdapter.create(webClient)).build();
+        return httpServiceProxyFactory.createClient(IdentityClient.class);
+    }
+}
+
+=> Cấu hình filter:
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        log.info("enter authentication filter....");
+        // dung jwt token build o identity-service
+        // get token form authorization header
+        List<String> authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
+        if(CollectionUtils.isEmpty(authHeader)) {
+            return unauthenticated(exchange.getResponse());
+        }
+        String token = authHeader.getFirst().replace("Bearer ","");
+        log.info("Token: {}", token);
+//
+//        //verify token
+        return identityService.introspect(token).flatMap(introspectResponseApiResponse -> {
+            if(introspectResponseApiResponse.getResult().isValid())
+                return chain.filter(exchange);
+            else
+                return unauthenticated(exchange.getResponse());
+        }).onErrorResume(throwable -> unauthenticated(exchange.getResponse()));
+    }
+	
+	
+=> Hàm trả về khi không hợp lệ:
+	Mono<Void> unauthenticated(ServerHttpResponse response) {
+			ApiResponse<?> apiResponse = ApiResponse.builder()
+					.code(1401).message("Unauthenticated!!").build();
+			//tim hieu them ve reactive - mono la gi, ...
+			String body = null;
+			try {
+				body = objectMapper.writeValueAsString(apiResponse);
+			} catch (JsonProcessingException e) {
+				throw new RuntimeException(e);
+			}
+			response.setStatusCode(HttpStatus.UNAUTHORIZED);
+			response.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+
+			return response.writeWith(Mono.just(response.bufferFactory().wrap(body.getBytes())));
+		}
+
+
+
+Tìm hiểm method mono, cách nó thực hiện authentication qua jwt, ...?
+
+=>   Mono là một lớp từ Project Reactor đại diện cho một kết quả tính toán không đồng bộ có thể là đơn lẻ hoặc trống. Nó có thể phát ra:
+		Một giá trị duy nhất, hoặc
+		Không có giá trị nào (chỉ báo hoàn thành), thường được dùng khi bạn muốn chỉ ra việc hoàn thành một hành động mà không trả về dữ liệu nào.
+
+
+Các class liên quan đến nhau trong api gateway, các method liên quan đến các class trong api gateway, nó là gì và sd thế nào ?
+Xem lại phần cấu hình con identity-service. 

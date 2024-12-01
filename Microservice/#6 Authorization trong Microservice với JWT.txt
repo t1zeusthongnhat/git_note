@@ -1,0 +1,9 @@
+
+
+Tạo hàm để check xem endpoint nhập vào có public hay không, call đến identity để get token thì api đó phải public
+public -> filter tiếp theo 
+
+
+Sau khi kết thúc #5 là đã authentication cho profile service được rồi, tiếp tục thực hiện authorize cho nó, dùng lại 3 class trong còniguration của thằng 
+identity service, đánh dấu PreAuthorize trong service cho hàm muốn set role để get. 
+

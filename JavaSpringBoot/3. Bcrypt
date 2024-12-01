@@ -1,0 +1,12 @@
+Bcrypt : Mã hóa password với Bcrypt 
+
+Mã hóa khi create mới user:
+
+PasswordEncoder paswordEncoder = new BcryptPasswordEncoder(10);
+uer.setPassword(passwordEncoder.encode(userDTO.getPassword())); 
+
+Thực hiện Authentication bằng cách:
+Tạo ra một AuthenticationService: viết hàm xử lí Authentic: hàm này nhận vào AuthenticationRequest gồm name và pass,
+tìm user theo name, sau đó get pass ra so sánh với username của request. 
+
+

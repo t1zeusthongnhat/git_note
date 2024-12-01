@@ -1,0 +1,35 @@
+Mục đích: Chia quyền hạn cho admin, user dựa vào JWT
+Này là phân quyền trên end-point 
+Dựa vào scope trong claim của payload trong jwt, tự build bằng StringJoiner:
+//build scope
+    private String buildScope(User user) {
+        StringJoiner stringJoiner = new StringJoiner(" ");
+        String roles = user.getRole(); // Giả sử đây là một chuỗi, ví dụ: "role1 role2 role3"
+
+        if (roles != null && !roles.isEmpty()) {
+            // Tách các vai trò bằng dấu cách
+            String[] roleArray = roles.split(" ");
+            for (String role : roleArray) {
+                stringJoiner.add(role.trim());
+            }
+        }
+
+        return stringJoiner.toString();
+    } 
+
+Trong filterChain:  .requestMatchers(HttpMethod.GET,"/user/list").hasAnyAuthority("ROLE_admin")
+
+Nếu muốn hiện scope khi get user, trong controller:
+  //lay thong tin khi getlist
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("Username: {}",authentication.getName() );
+       authentication.getAuthorities().forEach(grantedAuthority ->
+                log.info(grantedAuthority.getAuthority())) ;
+				
+Kĩ càng và chi tiết hơn:
+
+
+
+
+
+

@@ -1,0 +1,15 @@
+
+
+Ý tưởng log out là sẽ tạo một entity lưu trữ thông tin id + thời gian hết hạn của token từ signerJWT đã được xác thực: 
+
+Viết hàm logout mục đích là để đánh dấu token đã nằm trong invalid entity 
+Viết riêng ra một hàm verify token - throw exception 
+Custom ra một JWT Decoder thực hiện decoder khi xác thực token này chưa logout ( tức là chưa throw ra exception ) 
+
+Set là một interface, để khai báo phải dựa theo class triển khai nó:
+Set là tập hợp lưu các phần tử không đảm bảo thứ tự 
+-> HashSet đảm bảo thứ tự lưu trữ các phần tử
+-> LinkedHashSet: Lưu giữ giá trị thêm vào các ptu .
+-> TreeSet : Lưu giữ giá trị tăng dần của các ptu 
+-> SET KHÔNG CHO THÊM PHẦN TỬ TRÙNG LẶP 
+

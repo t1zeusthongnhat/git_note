@@ -1,0 +1,18 @@
+
+cấu hình cors trong WebClientConfiguration:
+
+ @Bean
+    public CorsWebFilter corsWebFilter() {
+        // Tạo đối tượng CorsConfiguration
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowedOrigins(List.of("*")); // Cho phép tất cả nguồn
+        corsConfiguration.setAllowedHeaders(List.of("*")); // Cho phép tất cả headers
+        corsConfiguration.setAllowedMethods(List.of("*")); // Cho phép tất cả phương thức
+
+        // Tạo đối tượng UrlBasedCorsConfigurationSource và ánh xạ cấu hình
+        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
+        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+
+        // Trả về CorsWebFilter
+        return new CorsWebFilter(urlBasedCorsConfigurationSource);
+    } 

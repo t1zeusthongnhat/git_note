@@ -1,0 +1,26 @@
+
+Cấu hình CORS cho front end: ( Cross origin resource sharing) 
+
+CORS là gì? 
+- là một cơ chế bảo mật của trình duyệt cho phép hoặc chặn các yêu cầu HTTP từ một nguồn (origin) khác với nguồn mà tài nguyên được cung cấp.
+
+@Bean
+public CorsFilter corsFilter() {
+
+    CorsConfiguration corsConfiguration = new CorsConfiguration();
+
+    corsConfiguration.addAllowedOrigin("http://localhost:3000");
+    corsConfiguration.addAllowedMethod("*");
+    corsConfiguration.addAllowedHeader("*");
+
+    UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
+    urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+    return new CorsFilter(urlBasedCorsConfigurationSource);
+}
+
+CorsConfiguration: Tạo một đối tượng cấu hình CORS, thiết lập các nguồn, phương thức, và header được phép.
+addAllowedOrigin("http://localhost:3000"): Chỉ cho phép các request từ http://localhost:3000.
+addAllowedMethod("*"): Cho phép tất cả các phương thức HTTP (GET, POST, etc.).
+addAllowedHeader("*"): Cho phép tất cả các header.
+UrlBasedCorsConfigurationSource: Đăng ký cấu hình CORS cho tất cả các đường dẫn (/**).
+CorsFilter: Trả về một bean CorsFilter mà Spring sẽ sử dụng để áp dụng các quy tắc CORS.

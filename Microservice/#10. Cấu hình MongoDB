@@ -1,0 +1,8 @@
+server:
+  port: 8082
+  servlet:
+    application:
+      name: notification-service
+    data:
+      mongodb:
+        uri: mongodb://root:root@localhost:27017/notification-service?authSource=admin
